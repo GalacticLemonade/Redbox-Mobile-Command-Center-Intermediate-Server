@@ -49,7 +49,7 @@ public class TCPServer {
                     message = EncryptionHelper.Decrypt(message);
                     Console.WriteLine($"Received from client: {message}");
 
-                    string response = await Program.OnServerIncomingData(message);
+                    string response = await Program.OnServerIncomingData(message, client);
                     response = EncryptionHelper.Encrypt(response);
                     byte[] responseData = Encoding.UTF8.GetBytes(response);
                     await stream.WriteAsync(responseData, 0, responseData.Length);
