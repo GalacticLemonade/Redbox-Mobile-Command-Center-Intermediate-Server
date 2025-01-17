@@ -50,7 +50,7 @@ namespace Redbox_Mobile_Command_Center_Intermediate_Server {
                         string message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
                         Console.WriteLine($"Received: {message}");
 
-                        // Echo the message back to the client
+                        // echo the message back to the client
                         string response = $"Server received: {message}";
                         byte[] responseData = Encoding.UTF8.GetBytes(response);
                         await stream.WriteAsync(responseData, 0, responseData.Length);
