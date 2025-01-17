@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.Net.Sockets;
 
 namespace Redbox_Mobile_Command_Center_Intermediate_Server {
 
@@ -10,11 +11,13 @@ namespace Redbox_Mobile_Command_Center_Intermediate_Server {
         static TCPServer server;
         static TCPClient client;
         static List<KioskRow> kiosksTable;
+        static Dictionary<TcpClient, int> currentKioskDictionary = new Dictionary<TcpClient, int>();
 
         static void Main(string[] args) {
 
             kiosksTable = new List<KioskRow> {
-                new KioskRow { KioskID = 35618 }
+                new KioskRow { KioskID = 35618 },
+                new KioskRow { KioskID = 32618 }
             };
 
             server = new TCPServer("0.0.0.0", 11500);
@@ -30,7 +33,7 @@ namespace Redbox_Mobile_Command_Center_Intermediate_Server {
             client = new TCPClient();
         }
 
-        public async static Task<string> OnServerIncomingData(string message) {
+        public async static Task<string> OnServerIncomingData(string message, TcpClient client) {
 
             string[] arguments = message.Split(' ');
 
@@ -43,11 +46,9 @@ namespace Redbox_Mobile_Command_Center_Intermediate_Server {
                 case "switch-to-kiosk":
                     int KioskID = Int32.Parse(arguments[1]);
 
-                    if (KioskID != 35618) {
-                        return "500-kiosk not found";
-                    }
+                    currentKioskDictionary[client] = KioskID;
 
-                    break;
+                    return "200";
                     /*
                 case "run-on-kiosk":
                     int KioskID = Int32.Parse(arguments[1]);
