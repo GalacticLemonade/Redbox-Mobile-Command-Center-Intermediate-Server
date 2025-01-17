@@ -4,10 +4,10 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-public class TcpServer {
+public class TCPServer {
     private TcpListener _listener;
 
-    public TcpServer(string ipAddress, int port) {
+    public TCPServer(string ipAddress, int port) {
         _listener = new TcpListener(IPAddress.Parse(ipAddress), port);
     }
 
