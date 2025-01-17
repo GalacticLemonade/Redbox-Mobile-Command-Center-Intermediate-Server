@@ -18,12 +18,15 @@ namespace Redbox_Mobile_Command_Center_Intermediate_Server {
         }
 
         public async Task SendMessageAsync(string message) {
+
+            message = EncryptionHelper.Encrypt(message);
+
             if (_stream == null)
                 throw new InvalidOperationException("Not connected to a server.");
 
             byte[] data = Encoding.UTF8.GetBytes(message);
             await _stream.WriteAsync(data, 0, data.Length);
-            Console.WriteLine($"Sent: {message}");
+            //Console.WriteLine($"Sent: {message}");
         }
 
         public async Task<string> ReceiveMessageAsync() {
@@ -35,7 +38,10 @@ namespace Redbox_Mobile_Command_Center_Intermediate_Server {
 
             if (bytesRead > 0) {
                 string message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                Console.WriteLine($"Received: {message}");
+
+                message = EncryptionHelper.Decrypt(message);
+
+                //Console.WriteLine($"Received: {message}");
                 return message;
             }
 
