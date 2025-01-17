@@ -13,11 +13,15 @@ namespace Redbox_Mobile_Command_Center_Intermediate_Server {
         static List<KioskRow> kiosksTable;
         static Dictionary<TcpClient, int> currentKioskDictionary = new Dictionary<TcpClient, int>();
 
+        static readonly Dictionary<int, string> kioskAddrMap = new Dictionary<int, string>
+        {
+            { 35618, "192.168.1.123:11600" }
+        };
+
         static void Main(string[] args) {
 
             kiosksTable = new List<KioskRow> {
-                new KioskRow { KioskID = 35618 },
-                new KioskRow { KioskID = 32618 }
+                new KioskRow { KioskID = 35618 }
             };
 
             server = new TCPServer("0.0.0.0", 11500);
@@ -33,7 +37,7 @@ namespace Redbox_Mobile_Command_Center_Intermediate_Server {
             client = new TCPClient();
         }
 
-        public async static Task<string> OnServerIncomingData(string message, TcpClient client) {
+        public async static Task<string> OnServerIncomingData(string message, TcpClient IncomingClient) {
 
             string[] arguments = message.Split(' ');
 
@@ -46,9 +50,40 @@ namespace Redbox_Mobile_Command_Center_Intermediate_Server {
                 case "switch-to-kiosk":
                     int KioskID = Int32.Parse(arguments[1]);
 
-                    currentKioskDictionary[client] = KioskID;
+                    if (!kioskAddrMap.ContainsKey(KioskID)) {
+                        return "503";
+                    }
+
+                    string addrport = kioskAddrMap[KioskID];
+
+                    //ping kiosk
+                    await client.ConnectAsync(addrport.Split(":")[0], Int32.Parse(addrport.Split(":")[1]));
+                    await client.SendMessageAsync("ping-kiosk");
+                    string response = await client.ReceiveMessageAsync();
+
+                    if (response != "200") {
+                        return "503";
+                    }
+
+                    currentKioskDictionary[IncomingClient] = KioskID;
 
                     return "200";
+                case "execute-kiosk-command":
+                    string Command = arguments[1];
+
+                    if (!currentKioskDictionary.ContainsKey(IncomingClient)) {
+                        return "503";
+                    }
+
+                    int RDBXKioskID = currentKioskDictionary[IncomingClient];
+
+                    if (!kioskAddrMap.ContainsKey(RDBXKioskID)) {
+                        return "503";
+                    }
+
+                    
+
+                    break;
                     /*
                 case "run-on-kiosk":
                     int KioskID = Int32.Parse(arguments[1]);
