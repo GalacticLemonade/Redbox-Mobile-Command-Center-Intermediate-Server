@@ -1,10 +1,22 @@
-﻿namespace Redbox_Mobile_Command_Center_Intermediate_Server {
+﻿using Newtonsoft.Json;
+
+namespace Redbox_Mobile_Command_Center_Intermediate_Server {
+
+    public class KioskRow {
+        public int KioskID { get; set; }
+    }
+
     class Program {
         static TCPServer server;
         static TCPClient client;
-        static int onKiosk = 0;
+        static List<KioskRow> kiosksTable;
 
         static void Main(string[] args) {
+
+            kiosksTable = new List<KioskRow> {
+                new KioskRow { KioskID = 35618 }
+            };
+
             server = new TCPServer("0.0.0.0", 11500);
             server.Start();
 
@@ -24,7 +36,10 @@
 
             switch (arguments[0]) {
                 case "get-all-kiosks":
-                    return "35618"; // get kiosks from db(?)
+
+                    string kioskJsonTable = JsonConvert.SerializeObject(kiosksTable, Formatting.None);
+
+                    return kioskJsonTable; // get kiosks from db(?)
                 case "switch-to-kiosk":
                     int KioskID = Int32.Parse(arguments[1]);
 
