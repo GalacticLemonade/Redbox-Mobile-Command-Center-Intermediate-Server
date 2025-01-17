@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Redbox_Mobile_Command_Center_Intermediate_Server;
+using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -46,10 +47,14 @@ public class TCPServer {
                 bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length);
                 if (bytesRead > 0) {
                     string message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                    message = EncryptionHelper.Decrypt(message);
                     Console.WriteLine($"Received from client: {message}");
 
+                    // replace this eventually
+                    // dynamic handler
                     // Respond to the client
                     string response = $"Server received: {message}";
+                    response = EncryptionHelper.Encrypt(response);
                     byte[] responseData = Encoding.UTF8.GetBytes(response);
                     await stream.WriteAsync(responseData, 0, responseData.Length);
 
