@@ -49,10 +49,13 @@ public class TCPServer {
                     message = EncryptionHelper.Decrypt(message);
                     Console.WriteLine($"Received from client: {message}");
 
-                    string response = await Program.OnServerIncomingData(message, client);
-                    response = EncryptionHelper.Encrypt(response);
-                    byte[] responseData = Encoding.UTF8.GetBytes(response);
-                    await stream.WriteAsync(responseData, 0, responseData.Length);
+                    Task.Run(async () =>
+                    {
+                        string response = await Program.OnServerIncomingData(message, client);
+                        response = EncryptionHelper.Encrypt(response);
+                        byte[] responseData = Encoding.UTF8.GetBytes(response);
+                        await stream.WriteAsync(responseData, 0, responseData.Length);
+                    });
                 }
                 else {
                     // If no data is received, assume the client has disconnected.
