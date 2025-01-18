@@ -15,7 +15,7 @@ namespace Redbox_Mobile_Command_Center_Intermediate_Server {
 
         static readonly Dictionary<int, string> kioskAddrMap = new Dictionary<int, string>
         {
-            { 35618, "192.168.1.123:11600" }
+            { 35618, "192.168.1.77:11600" }
         };
 
         static void Main(string[] args) {
@@ -60,7 +60,7 @@ namespace Redbox_Mobile_Command_Center_Intermediate_Server {
                     await client.ConnectAsync(addrport.Split(":")[0], Int32.Parse(addrport.Split(":")[1]));
                     await client.SendMessageAsync("ping-kiosk");
                     string response = await client.ReceiveMessageAsync();
-
+                    Console.WriteLine(response);
                     if (response != "200") {
                         return "503";
                     }
@@ -81,26 +81,14 @@ namespace Redbox_Mobile_Command_Center_Intermediate_Server {
                         return "503";
                     }
 
-                    
+                    string RDBXaddrport = kioskAddrMap[RDBXKioskID];
 
-                    break;
-                    /*
-                case "run-on-kiosk":
-                    int KioskID = Int32.Parse(arguments[1]);
-                    string Command = arguments[2];
+                    await client.ConnectAsync(RDBXaddrport.Split(":")[0], Int32.Parse(RDBXaddrport.Split(":")[1]));
 
-                    if (KioskID == 35618) {
-                        await client.ConnectAsync("192.168.1.123", 11600);
+                    await client.SendMessageAsync("execute-command " + Command);
 
-                        await client.SendMessageAsync(Command);
-
-                        string response = await client.ReceiveMessageAsync();
-                        Console.WriteLine(response);
-                        return response;
-                    }
-
-                    break;
-                    */
+                    string res = await client.ReceiveMessageAsync();
+                    return res;
             }
 
             //await client.SendMessageAsync(message);
