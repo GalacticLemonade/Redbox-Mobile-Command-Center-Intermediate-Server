@@ -13,10 +13,7 @@ namespace Redbox_Mobile_Command_Center_Intermediate_Server {
         static List<KioskRow> kiosksTable;
         static Dictionary<TcpClient, int> currentKioskDictionary = new Dictionary<TcpClient, int>();
 
-        static readonly Dictionary<int, string> kioskAddrMap = new Dictionary<int, string>
-        {
-            { 35618, "192.168.1.123:11600" }
-        };
+        static readonly Dictionary<int, string> kioskAddrMap = new Dictionary<int, string>();
 
         static void Main(string[] args) {
 
@@ -112,6 +109,14 @@ namespace Redbox_Mobile_Command_Center_Intermediate_Server {
 
                     string res = await client.ReceiveMessageAsync();
                     return res;
+                case "set-kiosk-addr":
+
+                    string kioskAddrID = arguments[1];
+                    string kioskAddrResponse = arguments[2];
+
+                    kioskAddrMap[Int32.Parse(kioskAddrID)] = kioskAddrResponse;
+
+                    return "200";
             }
 
             //await client.SendMessageAsync(message);
