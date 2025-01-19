@@ -15,7 +15,7 @@ namespace Redbox_Mobile_Command_Center_Intermediate_Server {
 
         static readonly Dictionary<int, string> kioskAddrMap = new Dictionary<int, string>
         {
-            { 35618, "192.168.1.77:11600" }
+            { 35618, "192.168.1.123:11600" }
         };
 
         static void Main(string[] args) {
@@ -68,8 +68,13 @@ namespace Redbox_Mobile_Command_Center_Intermediate_Server {
                     currentKioskDictionary[IncomingClient] = KioskID;
 
                     return "200";
+                case "select-no-kiosk":
+                    currentKioskDictionary.Remove(IncomingClient);
+                    return "200";
                 case "execute-kiosk-command":
                     string Command = arguments[1];
+                    string slot = arguments[2];
+                    string deck = arguments[3];
 
                     if (!currentKioskDictionary.ContainsKey(IncomingClient)) {
                         return "503";
@@ -85,7 +90,7 @@ namespace Redbox_Mobile_Command_Center_Intermediate_Server {
 
                     await client.ConnectAsync(RDBXaddrport.Split(":")[0], Int32.Parse(RDBXaddrport.Split(":")[1]));
 
-                    await client.SendMessageAsync("execute-command " + Command);
+                    await client.SendMessageAsync("execute-command " + Command + " " + slot + " " + deck);
 
                     string res = await client.ReceiveMessageAsync();
                     return res;
