@@ -44,6 +44,24 @@ namespace Redbox_Mobile_Command_Center_Intermediate_Server {
             switch (arguments[0]) {
                 case "get-all-kiosks":
 
+                    foreach (KioskRow kiosk in kiosksTable) {
+                        if (!kioskAddrMap.ContainsKey(kiosk.KioskID)) {
+                            return "503";
+                        }
+
+                        string addrport2 = kioskAddrMap[kiosk.KioskID];
+
+                        //ping kiosk
+                        await client.ConnectAsync(addrport2.Split(":")[0], Int32.Parse(addrport2.Split(":")[1]));
+                        await client.SendMessageAsync("ping-kiosk");
+                        string response2 = await client.ReceiveMessageAsync();
+                        Console.WriteLine(response2);
+                        if (response2 != "200") {
+                            kiosksTable.Remove(kiosk);
+                            return "503";
+                        }
+                    }
+
                     string kioskJsonTable = JsonConvert.SerializeObject(kiosksTable, Formatting.None);
 
                     return kioskJsonTable; // get kiosks from db(?)
