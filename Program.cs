@@ -103,7 +103,7 @@ namespace Redbox_Mobile_Command_Center_Intermediate_Server {
             return String.Empty;
         }
 
-        public void OnDisconnect(TcpClient IncomingClient) {
+        public static void OnDisconnect(TcpClient IncomingClient) {
             currentKioskDictionary.Remove(IncomingClient);
         }
     }

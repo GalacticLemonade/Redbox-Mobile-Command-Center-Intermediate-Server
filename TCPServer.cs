@@ -64,9 +64,11 @@ public class TCPServer {
             }
         }
         catch (Exception ex) {
+            Program.OnDisconnect(client);
             Console.WriteLine($"Error handling client: {ex.Message}");
         }
         finally {
+            Program.OnDisconnect(client);
             Console.WriteLine($"Client disconnected: {client.Client.RemoteEndPoint}");
             client.Close(); // Ensure the client connection is properly closed
         }
