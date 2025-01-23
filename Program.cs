@@ -119,10 +119,6 @@ namespace Redbox_Mobile_Command_Center_Intermediate_Server {
                     return "200";
             }
 
-            //await client.SendMessageAsync(message);
-            //string response = await client.ReceiveMessageAsync();
-            //return response;
-
             return String.Empty;
         }
 
